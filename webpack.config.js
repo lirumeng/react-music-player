@@ -1,18 +1,40 @@
+var webpack = require('webpack');
+var path = require('path');
+var HtmlWebpackPlugin = require('html-webpack-plugin');
+
 module.exports = {
-  entry: __dirname + '/app/index.js',
+  entry: [
+    'webpack-dev-server/client?http://localhost:3000',
+    'webpack/hot/only-dev-server',
+    'react-hot-loader/patch',
+    path.join(__dirname, 'app/index.js')
+  ],
   output: {
-    path: __dirname + '/dist',
-    filename:'bundle.js'
+    path: path.join(__dirname, '/dist/'),
+    filename: '[name].js',
+    publicPath: '/'
   },
+  plugins: [
+    new HtmlWebpackPlugin({
+      template: './index.tpl.html',
+      inject: 'body',
+      filename: './index.html'
+    }),
+    new webpack.optimize.OccurrenceOrderPlugin(),
+    new webpack.HotModuleReplacementPlugin(),
+    new webpack.NoEmitOnErrorsPlugin(),
+    new webpack.DefinePlugin({
+      'process.env.NODE_DEV': JSON.stringify('development')
+    })
+  ],
   module: {
-    loaders: [
-      {
+    loaders: [{
         test: /\.js$/,
         exclude: /node_modules/,
         loader: "babel-loader",
-        // query: {
-        //   presets: [ "es2015" ]
-        // }
+        query: {
+          presets: ["react", "es2015"]
+        }
       },
       {
         test: /\.css$/,
